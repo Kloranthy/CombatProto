@@ -1,3 +1,6 @@
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  */
 public enum TrainingLevel
@@ -36,5 +39,32 @@ public enum TrainingLevel
 		this.level = level;
 		this.name = name;
 		this.maxExperienceLevel = maxExperienceLevel;
+	}
+
+	public List<Dice> getDiceUsed()
+	{
+		List<Dice> diceUsed = new LinkedList<Dice>();
+		switch ( this )
+		{
+			case NONE:
+				diceUsed.add( new Dice( 8 ) );
+				break;
+			case BASIC:
+				diceUsed.add( new Dice( 6 ) );
+				diceUsed.add( new Dice( 6 ) );
+				break;
+			case INTERMEDIATE:
+				diceUsed.add( new Dice( 5 ) );
+				diceUsed.add( new Dice( 5 ) );
+				diceUsed.add( new Dice( 5 ) );
+				break;
+			case ADVANCED:
+				diceUsed.add( new Dice( 4 ) );
+				diceUsed.add( new Dice( 4 ) );
+				diceUsed.add( new Dice( 4 ) );
+				diceUsed.add( new Dice( 4 ) );
+				break;
+		}
+		return diceUsed;
 	}
 }

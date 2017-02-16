@@ -1,44 +1,65 @@
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
-import modifier.AdditiveModifier;
-import modifier.MultiplicativeModifier;
+import modifier.WeaponModifier;
 
 /**
  */
 public class Weapon
 {
-	// chance to hit
-	// fixed
+	private WeaponType weaponType;
+	private DamageType damageType;
 	private double baseHitScore;
-	private List<AdditiveModifier> additiveFixedHitModifiers;
-	private List<MultiplicativeModifier> multiplicativeFixedHitModifiers;
-	// variable
-	private List<AdditiveModifier> additiveVariableHitModifiers;
-	private List<MultiplicativeModifier> multiplicativeVariableHitModifiers;
-	// total
-	private List<AdditiveModifier> totalAdditiveModifiers;
-	private List<MultiplicativeModifier> totalMultiplicativeModifiers;
+	private double additiveModifierForFixedHitScore;
+	private double multiplicativeModifierForFixedHitScore;
+	private double additiveModifierForVariableHitScore;
+	private double multiplicativeModifierForVariableHitScore;
+	private double additiveModifierForTotalHitScore;
+	private double multiplicativeModifierForTotalHitScore;
+	private double baseDamage;
+	private double additiveModifierForFixedDamage;
+	private double multiplicativeModifierForFixedDamage;
+	private double additiveModifierForVariableDamage;
+	private double multiplicativeModifierForVariableDamage;
+	private double additiveModifierForTotalDamage;
+	private double multiplicativeModifierForTotalDamage;
+	private HashMap<UUID, WeaponModifier> weaponModifiersById;
 
 	public Weapon()
 	{
-		additiveFixedHitModifiers = new LinkedList<AdditiveModifier>();
-		multiplicativeFixedHitModifiers = new LinkedList<MultiplicativeModifier>();
-		additiveVariableHitModifiers = new LinkedList<AdditiveModifier>();
-		multiplicativeVariableHitModifiers = new LinkedList<MultiplicativeModifier>();
-		totalAdditiveModifiers = new LinkedList<AdditiveModifier>();
-		totalMultiplicativeModifiers = new LinkedList<MultiplicativeModifier>();
+		weaponModifiersById = new HashMap<UUID, WeaponModifier>();
+		initModifierValues();
 	}
 
 	public static void main( String[] args )
 	{
 		Weapon shotgun = new Weapon();
-		shotgun.setBaseHitScore( 10 )
-				 .addFixedHitModifier(
-				 	new AdditiveModifier().setName( "Innate Aim" )
-												 .setValue( 2 )
-											);
+		shotgun.setBaseHitScore( 10 );
 		System.out.println( "hit score for roll of 4: " + shotgun.calculateHitScore( 4 ));
+	}
+
+	public WeaponType getWeaponType()
+	{
+		return weaponType;
+	}
+
+	public Weapon setWeaponType( WeaponType weaponType )
+	{
+		this.weaponType = weaponType;
+		return this;
+	}
+
+	public DamageType getDamageType()
+	{
+		return damageType;
+	}
+
+	public Weapon setDamageType( DamageType damageType )
+	{
+		this.damageType = damageType;
+		return this;
 	}
 
 	public double getBaseHitScore()
@@ -52,120 +73,133 @@ public class Weapon
 		return this;
 	}
 
-	public Weapon addFixedHitModifier( AdditiveModifier fixedHitModifier)
+	public double getBaseDamage()
 	{
-		additiveFixedHitModifiers.add( fixedHitModifier );
+		return baseDamage;
+	}
+
+	public Weapon setBaseDamage( double baseDamage )
+	{
+		this.baseDamage = baseDamage;
 		return this;
 	}
 
-	public double calculateHitScore( double roll )
+	public Weapon addModifier( WeaponModifier weaponModifier )
 	{
-		double hitScore = calculateFixedHitScore() + calculateVariableHitScore( roll );
-		hitScore = applyTotalAdditiveModifiers( hitScore );
-		hitScore = applyTotalMultiplicativeModifiers( hitScore );
-		return hitScore;
+		weaponModifiersById.put( weaponModifier.getModifierId(), weaponModifier );
+		applyModifierEffects( weaponModifier );
+		return this;
 	}
 
-	public double calculateExpectedHitScore(
-		TrainingLevel trainingLevel,
-		ExperienceLevel experienceLevel
-														)
+	public List<WeaponModifier> getModifiers()
 	{
-		// todo add outcome tables to training levels
-		double expectedRoll = 3;
-		return calculateHitScore( expectedRoll );
+		List<WeaponModifier> weaponModifiers = new LinkedList<WeaponModifier>();
+		weaponModifiers.addAll( weaponModifiersById.values() );
+		return weaponModifiers;
+	}
+
+	public void removeModifier( UUID weaponModifierId )
+	{
+		if ( weaponModifiersById.containsKey( weaponModifierId ) )
+		{
+			WeaponModifier weaponModifier = weaponModifiersById.remove( weaponModifierId );
+			removeModifierEffects( weaponModifier );
+		}
 	}
 
 	public double calculateFixedHitScore()
 	{
 		double fixedHitScore = baseHitScore;
-		fixedHitScore = applyFixedAdditiveModifiers( fixedHitScore );
-		fixedHitScore = applyFixedMultiplicativeModifiers( fixedHitScore );
+		fixedHitScore += additiveModifierForFixedHitScore;
+		fixedHitScore *= multiplicativeModifierForFixedHitScore;
 		return fixedHitScore;
 	}
 
-	private double calculateVariableHitScore( double roll )
+	public double calculateVariableHitScore( double roll )
 	{
-		double variableHitScore = applyVariableAdditiveModifiers( roll );
-		variableHitScore = applyVariableMultiplicativeModifiers( variableHitScore );
+		double variableHitScore = roll;
+		variableHitScore += additiveModifierForVariableHitScore;
+		variableHitScore *= multiplicativeModifierForVariableHitScore;
 		return variableHitScore;
 	}
 
-	private double applyFixedAdditiveModifiers( double fixedHitScore )
+	public double calculateHitScore( double roll )
 	{
-		if ( additiveFixedHitModifiers.isEmpty() )
-		{
-			return fixedHitScore;
-		}
-		for ( AdditiveModifier fixedAdditiveModifier : additiveFixedHitModifiers )
-		{
-			fixedHitScore = fixedAdditiveModifier.applyTo( fixedHitScore );
-		}
-		return fixedHitScore;
-	}
-
-	private double applyFixedMultiplicativeModifiers( double fixedHitScore )
-	{
-		if ( multiplicativeFixedHitModifiers.isEmpty() )
-		{
-			return fixedHitScore;
-		}
-		for ( MultiplicativeModifier fixedMultiplicativeModifier : multiplicativeFixedHitModifiers )
-		{
-			fixedHitScore = fixedMultiplicativeModifier.applyTo( fixedHitScore );
-		}
-		return fixedHitScore;
-	}
-
-	private double applyVariableAdditiveModifiers( double variableHitScore )
-	{
-		if ( additiveVariableHitModifiers.isEmpty() )
-		{
-			return variableHitScore;
-		}
-		for ( AdditiveModifier variableAdditiveModifier : additiveVariableHitModifiers )
-		{
-			variableHitScore = variableAdditiveModifier.applyTo( variableHitScore );
-		}
-		return variableHitScore;
-	}
-
-	private double applyVariableMultiplicativeModifiers( double variableHitScore )
-	{
-		if ( multiplicativeVariableHitModifiers.isEmpty() )
-		{
-			return variableHitScore;
-		}
-		for ( MultiplicativeModifier variableMultiplicativeModifier : multiplicativeVariableHitModifiers )
-		{
-			variableHitScore = variableMultiplicativeModifier.applyTo( variableHitScore );
-		}
-		return variableHitScore;
-	}
-
-	private double applyTotalAdditiveModifiers( double hitScore )
-	{
-		if ( totalAdditiveModifiers.isEmpty() )
-		{
-			return hitScore;
-		}
-		for ( AdditiveModifier totalAdditiveModifier : totalAdditiveModifiers )
-		{
-			hitScore = totalAdditiveModifier.applyTo( hitScore );
-		}
+		double hitScore = calculateFixedHitScore() + calculateVariableHitScore( roll );
+		hitScore += additiveModifierForTotalHitScore;
+		hitScore *= multiplicativeModifierForTotalHitScore;
 		return hitScore;
 	}
 
-	private double applyTotalMultiplicativeModifiers( double hitScore )
+	public double calculateFixedDamage()
 	{
-		if ( totalMultiplicativeModifiers.isEmpty() )
-		{
-			return hitScore;
-		}
-		for ( MultiplicativeModifier totalMultiplicativeModifier : totalMultiplicativeModifiers )
-		{
-			hitScore = totalMultiplicativeModifier.applyTo( hitScore );
-		}
-		return hitScore;
+		double fixedDamage = baseDamage;
+		fixedDamage += additiveModifierForFixedDamage;
+		fixedDamage *= multiplicativeModifierForFixedDamage;
+		return fixedDamage;
+	}
+
+	public double calculateVariableDamage( double roll )
+	{
+		double variableDamage = roll;
+		variableDamage += additiveModifierForVariableDamage;
+		variableDamage *= multiplicativeModifierForVariableDamage;
+		return variableDamage;
+	}
+
+	public double calculateDamage( double roll )
+	{
+		double damage = calculateFixedDamage() + calculateVariableDamage( roll );
+		damage += additiveModifierForTotalDamage;
+		damage *= multiplicativeModifierForTotalDamage;
+		return damage;
+	}
+
+	private void initModifierValues()
+	{
+		additiveModifierForFixedHitScore = 0;
+		multiplicativeModifierForFixedHitScore = 1;
+		additiveModifierForVariableHitScore = 0;
+		multiplicativeModifierForVariableHitScore = 1;
+		additiveModifierForTotalHitScore = 0;
+		multiplicativeModifierForTotalHitScore = 1;
+		additiveModifierForFixedDamage = 0;
+		multiplicativeModifierForFixedDamage = 1;
+		additiveModifierForVariableDamage = 0;
+		multiplicativeModifierForVariableDamage = 1;
+		additiveModifierForTotalDamage = 0;
+		multiplicativeModifierForTotalDamage = 1;
+	}
+
+	private void applyModifierEffects( WeaponModifier weaponModifier )
+	{
+		additiveModifierForFixedHitScore += weaponModifier.getAdditiveModifierForFixedHitScore();
+		multiplicativeModifierForFixedHitScore += weaponModifier.getMultiplicativeModifierForFixedHitScore();
+		additiveModifierForVariableHitScore += weaponModifier.getAdditiveModifierForVariableHitScore();
+		multiplicativeModifierForVariableHitScore += weaponModifier.getMultiplicativeModifierForVariableHitScore();
+		additiveModifierForTotalHitScore += weaponModifier.getAdditiveModifierForTotalHitScore();
+		multiplicativeModifierForTotalHitScore += weaponModifier.getMultiplicativeModifierForTotalHitScore();
+		additiveModifierForFixedDamage += weaponModifier.getAdditiveModifierForFixedDamage();
+		multiplicativeModifierForFixedDamage += weaponModifier.getMultiplicativeModifierForFixedDamage();
+		additiveModifierForVariableDamage += weaponModifier.getAdditiveModifierForVariableDamage();
+		multiplicativeModifierForVariableDamage += weaponModifier.getMultiplicativeModifierForVariableDamage();
+		additiveModifierForTotalDamage += weaponModifier.getAdditiveModifierForTotalDamage();
+		multiplicativeModifierForTotalDamage += weaponModifier.getMultiplicativeModifierForTotalDamage();
+	}
+
+	private void removeModifierEffects( WeaponModifier weaponModifier )
+	{
+		additiveModifierForFixedHitScore -= weaponModifier.getAdditiveModifierForFixedHitScore();
+		multiplicativeModifierForFixedHitScore -= weaponModifier.getMultiplicativeModifierForFixedHitScore();
+		additiveModifierForVariableHitScore -= weaponModifier.getAdditiveModifierForVariableHitScore();
+		multiplicativeModifierForVariableHitScore -= weaponModifier.getMultiplicativeModifierForVariableHitScore();
+		additiveModifierForTotalHitScore -= weaponModifier.getAdditiveModifierForTotalHitScore();
+		multiplicativeModifierForTotalHitScore -= weaponModifier.getMultiplicativeModifierForTotalHitScore();
+		additiveModifierForFixedDamage -= weaponModifier.getAdditiveModifierForFixedDamage();
+		multiplicativeModifierForFixedDamage -= weaponModifier.getMultiplicativeModifierForFixedDamage();
+		additiveModifierForVariableDamage -= weaponModifier.getAdditiveModifierForVariableDamage();
+		multiplicativeModifierForVariableDamage -= weaponModifier.getMultiplicativeModifierForVariableDamage();
+		additiveModifierForTotalDamage -= weaponModifier.getAdditiveModifierForTotalDamage();
+		multiplicativeModifierForTotalDamage -= weaponModifier.getMultiplicativeModifierForTotalDamage();
 	}
 }

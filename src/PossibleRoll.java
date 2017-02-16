@@ -1,13 +1,16 @@
 /**
  */
-public class Outcome
+public class PossibleRoll
 {
 	private double value;
 	private int count;
 	private double probability;
 
-	public Outcome()
+	public PossibleRoll()
 	{
+		value = 0;
+		count = 0;
+		probability = 0;
 	}
 
 	public double getValue()
@@ -15,7 +18,7 @@ public class Outcome
 		return value;
 	}
 
-	public Outcome setValue( double value )
+	public PossibleRoll setValue( double value )
 	{
 		this.value = value;
 		return this;
@@ -26,7 +29,7 @@ public class Outcome
 		return count;
 	}
 
-	public Outcome setCount( int count )
+	public PossibleRoll setCount( int count )
 	{
 		this.count = count;
 		return this;
@@ -37,7 +40,7 @@ public class Outcome
 		return probability;
 	}
 
-	public Outcome setProbability( double probability )
+	public PossibleRoll setProbability( double probability )
 	{
 		this.probability = probability;
 		return this;
