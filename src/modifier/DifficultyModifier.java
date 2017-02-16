@@ -1,5 +1,7 @@
 package modifier;
 
+import java.util.UUID;
+
 /**
  */
 public class DifficultyModifier extends Modifier
@@ -13,6 +15,13 @@ public class DifficultyModifier extends Modifier
 
 	public DifficultyModifier()
 	{}
+
+	@Override
+	public DifficultyModifier setModifierId( UUID modifierId )
+	{
+		super.setModifierId( modifierId );
+		return this;
+	}
 
 	public double getAdditiveModifierForFixedDifficulty()
 	{

@@ -12,11 +12,22 @@ public class PossibleRolls
 	private EnumMap<TrainingLevel, List<PossibleRoll>> possibleRollsForTrainingLevel;
 	private EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>> possibleRollsForTwoTrainingLevels;
 
-	public PossibleRolls()
+	public static PossibleRolls getInstance()
+	{
+		if ( instance == null )
+		{
+			instance = new PossibleRolls();
+			instance.calculatePossibleRolls();
+		}
+		return instance;
+	}
+
+	private static PossibleRolls instance;
+
+	private PossibleRolls()
 	{
 		possibleRollsForTrainingLevel = new EnumMap<TrainingLevel, List<PossibleRoll>>( TrainingLevel.class );
-		possibleRollsForTwoTrainingLevels
-			= new EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>>( TrainingLevel.class );
+		possibleRollsForTwoTrainingLevels = new EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>>( TrainingLevel.class );
 	}
 
 	public static void main( String[] args )
@@ -32,8 +43,8 @@ public class PossibleRolls
 		System.out.println( "expected rolls for each training level" );
 		for ( TrainingLevel trainingLevel : TrainingLevel.values() )
 		{
-			System.out.println( "expected roll for training level " + trainingLevel.name +
-									  " is " + possibleRolls.getExpectedRoll( trainingLevel ) );
+			System.out.println( "expected roll for training level " + trainingLevel.name + " is " +
+									  possibleRolls.getExpectedRoll( trainingLevel ) );
 		}
 		System.out.println( "" );
 		System.out.println( "press enter to continue" );
@@ -45,8 +56,11 @@ public class PossibleRolls
 			for ( TrainingLevel trainingLevel2 : TrainingLevel.values() )
 			{
 				System.out.println( "expected roll for training level 1 (" + trainingLevel1.name +
-										  ") and training level 2 (" + trainingLevel2.name +
-										  ") is " + possibleRolls.getExpectedRoll( trainingLevel1, trainingLevel2 ) );
+										  ") and training level 2 (" + trainingLevel2.name + ") is " +
+										  possibleRolls.getExpectedRoll(
+											  trainingLevel1,
+											  trainingLevel2
+																				 ) );
 			}
 		}
 		System.out.println( "" );
@@ -60,10 +74,12 @@ public class PossibleRolls
 			for ( TrainingLevel trainingLevel2 : TrainingLevel.values() )
 			{
 				double expectedRollForTrainingLevel2 = possibleRolls.getExpectedRoll( trainingLevel2 );
-				double probabilityOfRollGreaterThan
-					= possibleRolls.getProbabilityOfRollGreaterThan( expectedRollForTrainingLevel2, trainingLevel1 );
+				double probabilityOfRollGreaterThan = possibleRolls.getProbabilityOfRollGreaterThan(
+					expectedRollForTrainingLevel2,
+					trainingLevel1
+																															  );
 				probabilityOfRollGreaterThan = Utilities.convertToPercentileFormat( probabilityOfRollGreaterThan );
-				System.out.println( "training level 1 (" + trainingLevel1.name  + ") has a " +
+				System.out.println( "training level 1 (" + trainingLevel1.name + ") has a " +
 										  probabilityOfRollGreaterThan + "% chance of rolling greater than " +
 										  "the expected value (" + expectedRollForTrainingLevel2 + ") of " +
 										  "training level 2 (" + trainingLevel2.name + ")" );
@@ -80,89 +96,16 @@ public class PossibleRolls
 			for ( TrainingLevel trainingLevel2 : TrainingLevel.values() )
 			{
 				double expectedRollForTrainingLevel2 = possibleRolls.getExpectedRoll( trainingLevel2 );
-				double probabilityOfRollGreaterThanOrEqualTo
-					= possibleRolls.getProbabilityOfRollGreaterThanOrEqualTo( expectedRollForTrainingLevel2, trainingLevel1 );
+				double probabilityOfRollGreaterThanOrEqualTo = possibleRolls.getProbabilityOfRollGreaterThanOrEqualTo(
+					expectedRollForTrainingLevel2,
+					trainingLevel1
+																																					  );
 				probabilityOfRollGreaterThanOrEqualTo = Utilities.convertToPercentileFormat( probabilityOfRollGreaterThanOrEqualTo );
-				System.out.println( "training level 1 (" + trainingLevel1.name  + ") has a " +
-										  probabilityOfRollGreaterThanOrEqualTo + "% chance of rolling greater than " +
-										  "or equal to the expected value (" + expectedRollForTrainingLevel2 + ") of " +
-										  "training level 2 (" + trainingLevel2.name + ")" );
-			}
-		}
-	}
-
-	public void calculatePossibleRolls()
-	{
-		System.out.println("calculating possible rolls for single training level");
-		// calculatePossibleRolls results for single training level
-		for ( TrainingLevel trainingLevel : TrainingLevel.values() )
-		{
-			List<PossibleRoll> possibleRolls = calculatePossibleRollsFor( trainingLevel );
-			possibleRollsForTrainingLevel.put( trainingLevel, possibleRolls );
-		}
-		System.out.println("calculating possible rolls for combinations of 2 training levels");
-		// calculatePossibleRolls the results for combinations of 2 training levels
-		for ( TrainingLevel trainingLevel1 : TrainingLevel.values() )
-		{
-			for ( TrainingLevel trainingLevel2 : TrainingLevel.values() )
-			{
-				// check if the enum map for training level 1 exists
-				EnumMap<TrainingLevel, List<PossibleRoll>> trainingLevel1EnumMap
-					= possibleRollsForTwoTrainingLevels.get(trainingLevel1);
-				if ( trainingLevel1EnumMap == null )
-				{
-					System.out.println( "training level 1 (" + trainingLevel1.name  + ") had no enum map" );
-					trainingLevel1EnumMap = new EnumMap<TrainingLevel, List<PossibleRoll>>(TrainingLevel.class);
-					possibleRollsForTwoTrainingLevels.put( trainingLevel1, trainingLevel1EnumMap );
-				}
-				// check if the enum map for training level 2 exists
-				EnumMap<TrainingLevel, List<PossibleRoll>> trainingLevel2EnumMap
-					= possibleRollsForTwoTrainingLevels.get(trainingLevel2);
-				if ( trainingLevel2EnumMap == null )
-				{
-					System.out.println( "training level 2 (" + trainingLevel2.name  + ") had no enum map" );
-					trainingLevel2EnumMap = new EnumMap<TrainingLevel, List<PossibleRoll>>(TrainingLevel.class);
-					possibleRollsForTwoTrainingLevels.put( trainingLevel2, trainingLevel2EnumMap );
-				}
-				// check if neither enum map has an entry for the other training level
-				if ( trainingLevel1EnumMap.get( trainingLevel2 ) == null && trainingLevel2EnumMap.get( trainingLevel1 ) == null)
-				{
-					System.out.println( "both training level 1 (" + trainingLevel1.name +
-											  ") and training level 2 (" + trainingLevel2.name +
-											  ") needed entries for each other" );
-					// calculatePossibleRolls the possible rolls for the combination
-					List<PossibleRoll> possibleRolls = calculatePossibleRollsFor( trainingLevel1, trainingLevel2 );
-					// add references to the possible rolls to both training levels enum maps
-					// with both training levels using the other training level as the key
-					trainingLevel1EnumMap.put( trainingLevel2, possibleRolls );
-					trainingLevel2EnumMap.put( trainingLevel1, possibleRolls );
-				}
-				// only training level 1 needs a reference for the possible rolls
-				else if ( trainingLevel1EnumMap.get( trainingLevel2 ) == null )
-				{
-					System.out.println( "training level 1 (" + trainingLevel1.name +
-											  ") needed an entry for training level 2 (" +
-											  trainingLevel2.name  + ")" );
-					List<PossibleRoll> possibleRolls
-						= possibleRollsForTwoTrainingLevels.get( trainingLevel2 ).get( trainingLevel1 );
-					trainingLevel1EnumMap.put( trainingLevel2, possibleRolls );
-				}
-				// only training level 2 needs a reference for the possible rolls
-				else if ( trainingLevel2EnumMap.get( trainingLevel1 ) == null )
-				{
-					System.out.println( "training level 2 (" + trainingLevel2.name +
-											  ") needed an entry for training level 1 (" +
-											  trainingLevel1.name + ")" );
-					List<PossibleRoll> possibleRolls
-						= possibleRollsForTwoTrainingLevels.get( trainingLevel1 ).get( trainingLevel2 );
-					trainingLevel2EnumMap.put( trainingLevel1, possibleRolls );
-				}
-				else
-				{
-					System.out.println( "neither training level 1 (" + trainingLevel1.name +
-											  ") nor training level 2 (" + trainingLevel2.name +
-											  ") needed an entry" );
-				}
+				System.out.println( "training level 1 (" + trainingLevel1.name + ") has a " +
+										  probabilityOfRollGreaterThanOrEqualTo +
+										  "% chance of rolling greater than " +
+										  "or equal to the expected value (" + expectedRollForTrainingLevel2 +
+										  ") of " + "training level 2 (" + trainingLevel2.name + ")" );
 			}
 		}
 	}
@@ -180,7 +123,10 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 										  )
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel1, trainingLevel2 );
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
 		return getExpectedRoll( possibleRolls );
 	}
 
@@ -216,8 +162,14 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 																)
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel1, trainingLevel2 );
-		return getProbabilityOfRollGreaterThan( roll, possibleRolls );
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollGreaterThan(
+			roll,
+			possibleRolls
+														  );
 	}
 
 	public double getProbabilityOfRollGreaterThan(
@@ -242,7 +194,10 @@ public class PossibleRolls
 																			)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
-		return getProbabilityOfRollGreaterThanOrEqualTo( roll, possibleRolls );
+		return getProbabilityOfRollGreaterThanOrEqualTo(
+			roll,
+			possibleRolls
+																	  );
 	}
 
 	public double getProbabilityOfRollGreaterThanOrEqualTo(
@@ -251,8 +206,14 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 																			)
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel1, trainingLevel2 );
-		return getProbabilityOfRollGreaterThanOrEqualTo( roll, possibleRolls );
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollGreaterThanOrEqualTo(
+			roll,
+			possibleRolls
+																	  );
 	}
 
 	public double getProbabilityOfRollGreaterThanOrEqualTo(
@@ -277,7 +238,10 @@ public class PossibleRolls
 															)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
-		return getProbabilityOfRollLessThan( roll, possibleRolls );
+		return getProbabilityOfRollLessThan(
+			roll,
+			possibleRolls
+													  );
 	}
 
 	public double getProbabilityOfRollLessThan(
@@ -286,8 +250,14 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 															)
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel1, trainingLevel2 );
-		return getProbabilityOfRollLessThan( roll, possibleRolls );
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollLessThan(
+			roll,
+			possibleRolls
+													  );
 	}
 
 	public double getProbabilityOfRollLessThan(
@@ -312,7 +282,10 @@ public class PossibleRolls
 																		)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
-		return getProbabilityOfRollLessThanOrEqualTo(roll, possibleRolls);
+		return getProbabilityOfRollLessThanOrEqualTo(
+			roll,
+			possibleRolls
+																  );
 	}
 
 	public double getProbabilityOfRollLessThanOrEqualTo(
@@ -321,8 +294,14 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 																		)
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel1, trainingLevel2 );
-		return getProbabilityOfRollLessThanOrEqualTo(roll, possibleRolls);
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollLessThanOrEqualTo(
+			roll,
+			possibleRolls
+																  );
 	}
 
 	public double getProbabilityOfRollLessThanOrEqualTo(
@@ -341,9 +320,110 @@ public class PossibleRolls
 		return probability;
 	}
 
+	private void calculatePossibleRolls()
+	{
+		System.out.println( "calculating possible rolls for single training level" );
+		// calculatePossibleRolls results for single training level
+		for ( TrainingLevel trainingLevel : TrainingLevel.values() )
+		{
+			List<PossibleRoll> possibleRolls = calculatePossibleRollsFor( trainingLevel );
+			possibleRollsForTrainingLevel.put(
+				trainingLevel,
+				possibleRolls
+														);
+		}
+		System.out.println( "calculating possible rolls for combinations of 2 training levels" );
+		// calculatePossibleRolls the results for combinations of 2 training levels
+		for ( TrainingLevel trainingLevel1 : TrainingLevel.values() )
+		{
+			for ( TrainingLevel trainingLevel2 : TrainingLevel.values() )
+			{
+				// check if the enum map for training level 1 exists
+				EnumMap<TrainingLevel, List<PossibleRoll>> trainingLevel1EnumMap = possibleRollsForTwoTrainingLevels.get( trainingLevel1 );
+				if ( trainingLevel1EnumMap == null )
+				{
+					System.out.println(
+						"training level 1 (" + trainingLevel1.name + ") had no enum map" );
+					trainingLevel1EnumMap = new EnumMap<TrainingLevel, List<PossibleRoll>>( TrainingLevel.class );
+					possibleRollsForTwoTrainingLevels.put(
+						trainingLevel1,
+						trainingLevel1EnumMap
+																	 );
+				}
+				// check if the enum map for training level 2 exists
+				EnumMap<TrainingLevel, List<PossibleRoll>> trainingLevel2EnumMap = possibleRollsForTwoTrainingLevels.get( trainingLevel2 );
+				if ( trainingLevel2EnumMap == null )
+				{
+					System.out.println(
+						"training level 2 (" + trainingLevel2.name + ") had no enum map" );
+					trainingLevel2EnumMap = new EnumMap<TrainingLevel, List<PossibleRoll>>( TrainingLevel.class );
+					possibleRollsForTwoTrainingLevels.put(
+						trainingLevel2,
+						trainingLevel2EnumMap
+																	 );
+				}
+				// check if neither enum map has an entry for the other training level
+				if ( trainingLevel1EnumMap.get( trainingLevel2 ) == null &&
+					  trainingLevel2EnumMap.get( trainingLevel1 ) == null )
+				{
+					System.out.println(
+						"both training level 1 (" + trainingLevel1.name + ") and training level 2 (" +
+						trainingLevel2.name + ") needed entries for each other" );
+					// calculatePossibleRolls the possible rolls for the combination
+					List<PossibleRoll> possibleRolls = calculatePossibleRollsFor(
+						trainingLevel1,
+						trainingLevel2
+																									);
+					// add references to the possible rolls to both training levels enum maps
+					// with both training levels using the other training level as the key
+					trainingLevel1EnumMap.put(
+						trainingLevel2,
+						possibleRolls
+													 );
+					trainingLevel2EnumMap.put(
+						trainingLevel1,
+						possibleRolls
+													 );
+				}
+				// only training level 1 needs a reference for the possible rolls
+				else if ( trainingLevel1EnumMap.get( trainingLevel2 ) == null )
+				{
+					System.out.println( "training level 1 (" + trainingLevel1.name +
+											  ") needed an entry for training level 2 (" +
+											  trainingLevel2.name + ")" );
+					List<PossibleRoll> possibleRolls = possibleRollsForTwoTrainingLevels.get( trainingLevel2 )
+																											  .get( trainingLevel1 );
+					trainingLevel1EnumMap.put(
+						trainingLevel2,
+						possibleRolls
+													 );
+				}
+				// only training level 2 needs a reference for the possible rolls
+				else if ( trainingLevel2EnumMap.get( trainingLevel1 ) == null )
+				{
+					System.out.println( "training level 2 (" + trainingLevel2.name +
+											  ") needed an entry for training level 1 (" +
+											  trainingLevel1.name + ")" );
+					List<PossibleRoll> possibleRolls = possibleRollsForTwoTrainingLevels.get( trainingLevel1 )
+																											  .get( trainingLevel2 );
+					trainingLevel2EnumMap.put(
+						trainingLevel1,
+						possibleRolls
+													 );
+				}
+				else
+				{
+					System.out.println(
+						"neither training level 1 (" + trainingLevel1.name + ") nor training level 2 (" +
+						trainingLevel2.name + ") needed an entry" );
+				}
+			}
+		}
+	}
+
 	private List<PossibleRoll> calculatePossibleRollsFor( TrainingLevel trainingLevel )
 	{
-		System.out.println("calculating possible rolls for training level " + trainingLevel.name);
+		System.out.println( "calculating possible rolls for training level " + trainingLevel.name );
 		List<Dice> diceUsed = trainingLevel.getDiceUsed();
 		return calculatePossibleRollsFor( diceUsed );
 	}
@@ -353,8 +433,6 @@ public class PossibleRolls
 		TrainingLevel trainingLevel2
 																		 )
 	{
-		System.out.println("calculating possible rolls for training levels " +
-								 trainingLevel1.name + " and " + trainingLevel2.name);
 		List<Dice> diceUsed = new LinkedList<Dice>();
 		diceUsed.addAll( trainingLevel1.getDiceUsed() );
 		diceUsed.addAll( trainingLevel2.getDiceUsed() );
@@ -534,7 +612,10 @@ public class PossibleRolls
 		{
 			expected += possibleRoll.getValue() * possibleRoll.getProbability();
 		}
-		expected = Utilities.round( expected, 2 );
+		expected = Utilities.round(
+			expected,
+			2
+										  );
 		return expected;
 	}
 }

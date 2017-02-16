@@ -1,4 +1,10 @@
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 import modifier.DifficultyModifier;
+import modifier.Modifier;
 
 /**
  */
@@ -6,6 +12,9 @@ public class Defender
 {
 	private TrainingLevel evasionTrainingLevel;
 	private ExperienceLevel evasionExperienceLevel;
+	private Stat difficulty;
+	private Stat damageNegation;
+	private Stat damageResistance;
 	private double baseDifficulty;
 	private double additiveModifierForFixedDifficulty;
 	private double multiplicativeModifierForFixedDifficulty;
@@ -14,9 +23,15 @@ public class Defender
 	private double additiveModifierForTotalDifficulty;
 	private double multiplicativeModifierForTotalDifficulty;
 	private Stance defenderStance;
+	private double baseDamageNegation;
+	private double baseDamageResistance;
+	private HashMap<UUID, Modifier> modifiersById;
 
 	public Defender()
-	{}
+	{
+		modifiersById = new HashMap<UUID, Modifier>();
+		initModifierValues();
+	}
 
 	public TrainingLevel getEvasionTrainingLevel()
 	{
@@ -51,6 +66,28 @@ public class Defender
 		return this;
 	}
 
+	public double getBaseDamageNegation()
+	{
+		return baseDamageNegation;
+	}
+
+	public Defender setBaseDamageNegation( double baseDamageNegation )
+	{
+		this.baseDamageNegation = baseDamageNegation;
+		return this;
+	}
+
+	public double getBaseDamageResistance()
+	{
+		return baseDamageResistance;
+	}
+
+	public Defender setBaseDamageResistance( double baseDamageResistance )
+	{
+		this.baseDamageResistance = baseDamageResistance;
+		return this;
+	}
+
 	public Stance getDefenderStance()
 	{
 		return defenderStance;
@@ -58,14 +95,15 @@ public class Defender
 
 	public Defender setDefenderStance( Stance defenderStance )
 	{
-		// todo add a difficulty modifier to stance
 		if ( this.defenderStance != null )
 		{
-			// get the old stance's difficulty modifier and remove its effects
+			// get the old stance's difficulty modifier and remove it
+			UUID oldModifierId = this.defenderStance.getDifficultyModifier().getModifierId();
+			removeModifer( oldModifierId );
 		}
 		this.defenderStance = defenderStance;
 		// get the new stance's difficulty modifier and apply its effects
-		//applyModifierEffects(  );
+		applyModifierEffects( defenderStance.getDifficultyModifier() );
 		return this;
 	}
 
@@ -77,6 +115,19 @@ public class Defender
 		return fixedDifficulty;
 	}
 
+	public double performDifficultyRoll()
+	{
+		List<Dice> diceUsed = new LinkedList<Dice>();
+		diceUsed.addAll( evasionTrainingLevel.getDiceUsed() );
+		double roll = 0;
+		for ( Dice dice : diceUsed )
+		{
+			roll += dice.roll();
+		}
+		roll += evasionExperienceLevel.bonus;
+		return calculateDifficulty( roll );
+	}
+
 	public double calculateVariableDifficulty( double roll )
 	{
 		double variableDifficulty = roll;
@@ -85,7 +136,67 @@ public class Defender
 		return variableDifficulty;
 	}
 
-	public double calculateDifficulty( double roll )
+	public double calculateExpectedDifficulty()
+	{
+		double expectedRoll = PossibleRolls.getInstance()
+													  .getExpectedRoll( evasionTrainingLevel );
+		expectedRoll += evasionExperienceLevel.bonus;
+		return calculateDifficulty( expectedRoll );
+	}
+
+	public void receiveDamage( double damageReceived )
+	{
+		System.out.println( "received " + damageReceived + " damage" );
+		double damageNegation = baseDamageNegation;
+		System.out.println( "damage negation: " + damageNegation );
+			// todo add modifiers for damage negation
+		double damageNegated;
+		if ( damageNegation > damageReceived )
+		{
+			damageNegated = damageReceived;
+		}
+		else
+		{
+			damageNegated = damageNegation;
+		}
+		System.out.println( "negated " + damageNegated + " damage" );
+		damageReceived -= damageNegated;
+		System.out.println( damageReceived + " damage remaining" );
+		double damageResistance = baseDamageResistance;
+		// todo modifiers for damage resistance
+		System.out.println( "damage resistance: " + damageResistance );
+		double damageResisted = damageReceived * damageResistance;
+		System.out.println( "resisted  " + damageResisted + " damage" );
+		damageReceived -= damageResisted;
+		if ( damageReceived < 0 ) // should never happen
+		{
+			damageReceived = 0;
+		}
+		System.out.println( damageReceived + " damage remaining" );
+	}
+
+	public Defender addModifer( Modifier modifier )
+	{
+		modifiersById.put( modifier.getModifierId(), modifier );
+		// todo come up with a way of applying modifiers of different types
+		// having the modifier hold all stats it could possibly modify is not ideal
+		// perhaps have it apply itself to defender/weapon?
+		// or have types of modifiers?
+		//applyModifierEffects( modifier );
+		return this;
+	}
+
+	public Defender removeModifer( UUID modifierId )
+	{
+		if ( modifiersById.containsKey( modifierId ) )
+		{
+			Modifier modifier = modifiersById.remove( modifierId );
+			//removeModifierEffects( modifier );
+		}
+		return this;
+	}
+
+	private double calculateDifficulty( double roll )
 	{
 		double difficulty = calculateFixedDifficulty() + calculateVariableDifficulty( roll );
 		difficulty += additiveModifierForTotalDifficulty;
@@ -93,12 +204,14 @@ public class Defender
 		return difficulty;
 	}
 
-	public double calculateEstimatedDifficulty()
+	private void initModifierValues()
 	{
-		double expectedRoll = 0;
-		//expectedRoll += evasionTrainingLevel.possibleRolls.getExpectedRoll();
-		expectedRoll += evasionExperienceLevel.bonus;
-		return calculateDifficulty( expectedRoll );
+		additiveModifierForFixedDifficulty = 0;
+		multiplicativeModifierForFixedDifficulty = 1;
+		additiveModifierForVariableDifficulty = 0;
+		multiplicativeModifierForVariableDifficulty = 1;
+		additiveModifierForTotalDifficulty = 0;
+		multiplicativeModifierForTotalDifficulty = 1;
 	}
 
 	private void applyModifierEffects( DifficultyModifier difficultyModifier )

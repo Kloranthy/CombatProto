@@ -12,6 +12,7 @@ public class Weapon
 	private WeaponType weaponType;
 	private DamageType damageType;
 	private double baseHitScore;
+	// modifier values for hit score
 	private double additiveModifierForFixedHitScore;
 	private double multiplicativeModifierForFixedHitScore;
 	private double additiveModifierForVariableHitScore;
@@ -19,6 +20,7 @@ public class Weapon
 	private double additiveModifierForTotalHitScore;
 	private double multiplicativeModifierForTotalHitScore;
 	private double baseDamage;
+	// modifier values for damage
 	private double additiveModifierForFixedDamage;
 	private double multiplicativeModifierForFixedDamage;
 	private double additiveModifierForVariableDamage;
@@ -31,13 +33,6 @@ public class Weapon
 	{
 		weaponModifiersById = new HashMap<UUID, WeaponModifier>();
 		initModifierValues();
-	}
-
-	public static void main( String[] args )
-	{
-		Weapon shotgun = new Weapon();
-		shotgun.setBaseHitScore( 10 );
-		System.out.println( "hit score for roll of 4: " + shotgun.calculateHitScore( 4 ));
 	}
 
 	public WeaponType getWeaponType()
@@ -84,6 +79,66 @@ public class Weapon
 		return this;
 	}
 
+	public double getAdditiveModifierForFixedHitScore()
+	{
+		return additiveModifierForFixedHitScore;
+	}
+
+	public double getMultiplicativeModifierForFixedHitScore()
+	{
+		return multiplicativeModifierForFixedHitScore;
+	}
+
+	public double getAdditiveModifierForVariableHitScore()
+	{
+		return additiveModifierForVariableHitScore;
+	}
+
+	public double getMultiplicativeModifierForVariableHitScore()
+	{
+		return multiplicativeModifierForVariableHitScore;
+	}
+
+	public double getAdditiveModifierForTotalHitScore()
+	{
+		return additiveModifierForTotalHitScore;
+	}
+
+	public double getMultiplicativeModifierForTotalHitScore()
+	{
+		return multiplicativeModifierForTotalHitScore;
+	}
+
+	public double getAdditiveModifierForFixedDamage()
+	{
+		return additiveModifierForFixedDamage;
+	}
+
+	public double getMultiplicativeModifierForFixedDamage()
+	{
+		return multiplicativeModifierForFixedDamage;
+	}
+
+	public double getAdditiveModifierForVariableDamage()
+	{
+		return additiveModifierForVariableDamage;
+	}
+
+	public double getMultiplicativeModifierForVariableDamage()
+	{
+		return multiplicativeModifierForVariableDamage;
+	}
+
+	public double getAdditiveModifierForTotalDamage()
+	{
+		return additiveModifierForTotalDamage;
+	}
+
+	public double getMultiplicativeModifierForTotalDamage()
+	{
+		return multiplicativeModifierForTotalDamage;
+	}
+
 	public Weapon addModifier( WeaponModifier weaponModifier )
 	{
 		weaponModifiersById.put( weaponModifier.getModifierId(), weaponModifier );
@@ -105,54 +160,6 @@ public class Weapon
 			WeaponModifier weaponModifier = weaponModifiersById.remove( weaponModifierId );
 			removeModifierEffects( weaponModifier );
 		}
-	}
-
-	public double calculateFixedHitScore()
-	{
-		double fixedHitScore = baseHitScore;
-		fixedHitScore += additiveModifierForFixedHitScore;
-		fixedHitScore *= multiplicativeModifierForFixedHitScore;
-		return fixedHitScore;
-	}
-
-	public double calculateVariableHitScore( double roll )
-	{
-		double variableHitScore = roll;
-		variableHitScore += additiveModifierForVariableHitScore;
-		variableHitScore *= multiplicativeModifierForVariableHitScore;
-		return variableHitScore;
-	}
-
-	public double calculateHitScore( double roll )
-	{
-		double hitScore = calculateFixedHitScore() + calculateVariableHitScore( roll );
-		hitScore += additiveModifierForTotalHitScore;
-		hitScore *= multiplicativeModifierForTotalHitScore;
-		return hitScore;
-	}
-
-	public double calculateFixedDamage()
-	{
-		double fixedDamage = baseDamage;
-		fixedDamage += additiveModifierForFixedDamage;
-		fixedDamage *= multiplicativeModifierForFixedDamage;
-		return fixedDamage;
-	}
-
-	public double calculateVariableDamage( double roll )
-	{
-		double variableDamage = roll;
-		variableDamage += additiveModifierForVariableDamage;
-		variableDamage *= multiplicativeModifierForVariableDamage;
-		return variableDamage;
-	}
-
-	public double calculateDamage( double roll )
-	{
-		double damage = calculateFixedDamage() + calculateVariableDamage( roll );
-		damage += additiveModifierForTotalDamage;
-		damage *= multiplicativeModifierForTotalDamage;
-		return damage;
 	}
 
 	private void initModifierValues()

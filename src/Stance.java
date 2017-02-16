@@ -1,29 +1,48 @@
+import java.util.UUID;
+
+import modifier.DifficultyModifier;
+
 /**
  */
 public enum Stance
 {
-	STANDING(
-		1,
-		1
-	),
-	CROUCHING(
-		1.5,
-		0.5
-	),
-	PRONE(
-		1.75,
-		0
-	);
+	STANDING( "standing" ),
+	CROUCHING( "crouching" ),
+	PRONE( "prone" );
 
-	public final double difficultyModifier;
-	public final double evasionModifier;
+	public final String name;
+	public final UUID standingModifierId = UUID.randomUUID();
+	public final UUID crouchingModifierId = UUID.randomUUID();
+	public final UUID proneModifierId = UUID.randomUUID();
 
-	Stance(
-		double difficultyModifier,
-		double evasionModifier
-			)
+	Stance( String name )
 	{
-		this.difficultyModifier = difficultyModifier;
-		this.evasionModifier = evasionModifier;
+		this.name = name;
+	}
+
+	public DifficultyModifier getDifficultyModifier()
+	{
+		// note: always returns a new difficulty modifier
+		// which means the modifier returned won't be
+		// found in the defender's modifiers
+		DifficultyModifier difficultyModifier = new DifficultyModifier();
+		switch ( this )
+		{
+			case STANDING:
+				difficultyModifier.setModifierId( standingModifierId )
+										.setMultiplicativeModifierForFixedDifficulty( 0 )
+										.setMultiplicativeModifierForVariableDifficulty( 0 );
+				break;
+			case CROUCHING:
+				difficultyModifier.setModifierId( crouchingModifierId )
+										.setMultiplicativeModifierForFixedDifficulty( 0.5 )
+										.setMultiplicativeModifierForVariableDifficulty( -0.5 );
+				break;
+			case PRONE:
+				difficultyModifier.setModifierId( proneModifierId )
+										.setMultiplicativeModifierForFixedDifficulty( 0.75 )
+										.setMultiplicativeModifierForVariableDifficulty( -0.75 );
+		}
+		return difficultyModifier;
 	}
 }
