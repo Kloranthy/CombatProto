@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 /**
  */
 public class PossibleRoll

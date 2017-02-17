@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -6,24 +8,24 @@ import java.util.List;
 public enum TrainingLevel
 {
 	NONE(
-		0,
-		"none",
-		ExperienceLevel.NOVICE
+			 0,
+			 "none",
+			 ExperienceLevel.NOVICE
 	),
 	BASIC(
-		1,
-		"basic",
-		ExperienceLevel.VETERAN
+			  1,
+			  "basic",
+			  ExperienceLevel.VETERAN
 	),
 	INTERMEDIATE(
-		2,
-		"intermediate",
-		ExperienceLevel.VETERAN
+						2,
+						"intermediate",
+						ExperienceLevel.VETERAN
 	),
 	ADVANCED(
-		3,
-		"advanced",
-		ExperienceLevel.MASTER
+				  3,
+				  "advanced",
+				  ExperienceLevel.MASTER
 	);
 
 	public final int level;
@@ -31,9 +33,9 @@ public enum TrainingLevel
 	public final ExperienceLevel maxExperienceLevel;
 
 	TrainingLevel(
-		int level,
-		String name,
-		ExperienceLevel maxExperienceLevel
+						 int level,
+						 String name,
+						 ExperienceLevel maxExperienceLevel
 					 )
 	{
 		this.level = level;

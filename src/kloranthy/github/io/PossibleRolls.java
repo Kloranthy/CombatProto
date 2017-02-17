@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -9,8 +11,15 @@ import java.util.Scanner;
  */
 public class PossibleRolls
 {
+	private static PossibleRolls instance;
 	private EnumMap<TrainingLevel, List<PossibleRoll>> possibleRollsForTrainingLevel;
 	private EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>> possibleRollsForTwoTrainingLevels;
+
+	private PossibleRolls()
+	{
+		possibleRollsForTrainingLevel = new EnumMap<TrainingLevel, List<PossibleRoll>>( TrainingLevel.class );
+		possibleRollsForTwoTrainingLevels = new EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>>( TrainingLevel.class );
+	}
 
 	public static PossibleRolls getInstance()
 	{
@@ -20,14 +29,6 @@ public class PossibleRolls
 			instance.calculatePossibleRolls();
 		}
 		return instance;
-	}
-
-	private static PossibleRolls instance;
-
-	private PossibleRolls()
-	{
-		possibleRollsForTrainingLevel = new EnumMap<TrainingLevel, List<PossibleRoll>>( TrainingLevel.class );
-		possibleRollsForTwoTrainingLevels = new EnumMap<TrainingLevel, EnumMap<TrainingLevel, List<PossibleRoll>>>( TrainingLevel.class );
 	}
 
 	public static void main( String[] args )
@@ -111,7 +112,7 @@ public class PossibleRolls
 	}
 
 	public double getExpectedRoll(
-		TrainingLevel trainingLevel
+											  TrainingLevel trainingLevel
 										  )
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
@@ -119,8 +120,8 @@ public class PossibleRolls
 	}
 
 	public double getExpectedRoll(
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
+											  TrainingLevel trainingLevel1,
+											  TrainingLevel trainingLevel2
 										  )
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
@@ -137,6 +138,11 @@ public class PossibleRolls
 								  .getValue();
 	}
 
+	private void sortByValue( List<PossibleRoll> possibleRolls )
+	{
+		possibleRolls.sort( (Comparator.comparingDouble( PossibleRoll::getValue )) );
+	}
+
 	public double getHighestRoll( List<PossibleRoll> possibleRolls )
 	{
 		sortByValue( possibleRolls );
@@ -145,8 +151,8 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollGreaterThan(
-		double roll,
-		TrainingLevel trainingLevel
+																	double roll,
+																	TrainingLevel trainingLevel
 																)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
@@ -157,9 +163,9 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollGreaterThan(
-		double roll,
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
+																	double roll,
+																	TrainingLevel trainingLevel1,
+																	TrainingLevel trainingLevel2
 																)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
@@ -172,9 +178,18 @@ public class PossibleRolls
 														  );
 	}
 
+	private List<PossibleRoll> getPossibleRollsFor(
+																	 TrainingLevel trainingLevel1,
+																	 TrainingLevel trainingLevel2
+																 )
+	{
+		return possibleRollsForTwoTrainingLevels.get( trainingLevel1 )
+															 .get( trainingLevel2 );
+	}
+
 	public double getProbabilityOfRollGreaterThan(
-		double roll,
-		List<PossibleRoll> possibleRolls
+																	double roll,
+																	List<PossibleRoll> possibleRolls
 																)
 	{
 		double probability = 0.00;
@@ -189,8 +204,8 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollGreaterThanOrEqualTo(
-		double roll,
-		TrainingLevel trainingLevel
+																				double roll,
+																				TrainingLevel trainingLevel
 																			)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
@@ -201,9 +216,9 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollGreaterThanOrEqualTo(
-		double roll,
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
+																				double roll,
+																				TrainingLevel trainingLevel1,
+																				TrainingLevel trainingLevel2
 																			)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
@@ -217,8 +232,8 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollGreaterThanOrEqualTo(
-		double roll,
-		List<PossibleRoll> possibleRolls
+																				double roll,
+																				List<PossibleRoll> possibleRolls
 																			)
 	{
 		double probability = 0.00;
@@ -233,8 +248,8 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollLessThan(
-		double roll,
-		TrainingLevel trainingLevel
+																double roll,
+																TrainingLevel trainingLevel
 															)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
@@ -244,25 +259,14 @@ public class PossibleRolls
 													  );
 	}
 
-	public double getProbabilityOfRollLessThan(
-		double roll,
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
-															)
+	private List<PossibleRoll> getPossibleRollsFor( TrainingLevel trainingLevel )
 	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
-			trainingLevel1,
-			trainingLevel2
-																				);
-		return getProbabilityOfRollLessThan(
-			roll,
-			possibleRolls
-													  );
+		return possibleRollsForTrainingLevel.get( trainingLevel );
 	}
 
 	public double getProbabilityOfRollLessThan(
-		double roll,
-		List<PossibleRoll> possibleRolls
+																double roll,
+																List<PossibleRoll> possibleRolls
 															)
 	{
 		double probability = 0.00;
@@ -276,9 +280,25 @@ public class PossibleRolls
 		return probability;
 	}
 
+	public double getProbabilityOfRollLessThan(
+																double roll,
+																TrainingLevel trainingLevel1,
+																TrainingLevel trainingLevel2
+															)
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollLessThan(
+			roll,
+			possibleRolls
+													  );
+	}
+
 	public double getProbabilityOfRollLessThanOrEqualTo(
-		double roll,
-		TrainingLevel trainingLevel
+																			double roll,
+																			TrainingLevel trainingLevel
 																		)
 	{
 		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
@@ -289,24 +309,8 @@ public class PossibleRolls
 	}
 
 	public double getProbabilityOfRollLessThanOrEqualTo(
-		double roll,
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
-																		)
-	{
-		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
-			trainingLevel1,
-			trainingLevel2
-																				);
-		return getProbabilityOfRollLessThanOrEqualTo(
-			roll,
-			possibleRolls
-																  );
-	}
-
-	public double getProbabilityOfRollLessThanOrEqualTo(
-		double roll,
-		List<PossibleRoll> possibleRolls
+																			double roll,
+																			List<PossibleRoll> possibleRolls
 																		)
 	{
 		double probability = 0.00;
@@ -318,6 +322,22 @@ public class PossibleRolls
 			}
 		}
 		return probability;
+	}
+
+	public double getProbabilityOfRollLessThanOrEqualTo(
+																			double roll,
+																			TrainingLevel trainingLevel1,
+																			TrainingLevel trainingLevel2
+																		)
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRollLessThanOrEqualTo(
+			roll,
+			possibleRolls
+																  );
 	}
 
 	private void calculatePossibleRolls()
@@ -429,8 +449,8 @@ public class PossibleRolls
 	}
 
 	private List<PossibleRoll> calculatePossibleRollsFor(
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
+																			 TrainingLevel trainingLevel1,
+																			 TrainingLevel trainingLevel2
 																		 )
 	{
 		List<Dice> diceUsed = new LinkedList<Dice>();
@@ -493,8 +513,8 @@ public class PossibleRolls
 	}
 
 	private void addPossibleRoll(
-		double value,
-		List<PossibleRoll> possibleRolls
+											 double value,
+											 List<PossibleRoll> possibleRolls
 										 )
 	{
 		// check if the value is already present in the possible rolls
@@ -523,8 +543,8 @@ public class PossibleRolls
 	}
 
 	private boolean hasPossibleRollWithValue(
-		double value,
-		List<PossibleRoll> possibleRolls
+															 double value,
+															 List<PossibleRoll> possibleRolls
 														 )
 	{
 		// if there are no entries, the value is not present
@@ -543,8 +563,8 @@ public class PossibleRolls
 	}
 
 	private PossibleRoll getPossibleRollWithValue(
-		double value,
-		List<PossibleRoll> possibleRolls
+																	double value,
+																	List<PossibleRoll> possibleRolls
 																)
 	{
 		for ( PossibleRoll possibleRoll : possibleRolls )
@@ -578,33 +598,14 @@ public class PossibleRolls
 		}
 	}
 
-	private void sortByValue( List<PossibleRoll> possibleRolls )
-	{
-		possibleRolls.sort( (Comparator.comparingDouble( PossibleRoll::getValue )) );
-	}
-
 	private void sortByProbability( List<PossibleRoll> possibleRolls )
 	{
 		// count is a proxy for probability
 		possibleRolls.sort( (Comparator.comparingInt( PossibleRoll::getCount )) );
 	}
 
-	private List<PossibleRoll> getPossibleRollsFor( TrainingLevel trainingLevel )
-	{
-		return possibleRollsForTrainingLevel.get( trainingLevel );
-	}
-
-	private List<PossibleRoll> getPossibleRollsFor(
-		TrainingLevel trainingLevel1,
-		TrainingLevel trainingLevel2
-																 )
-	{
-		return possibleRollsForTwoTrainingLevels.get( trainingLevel1 )
-															 .get( trainingLevel2 );
-	}
-
 	private double getExpectedRoll(
-		List<PossibleRoll> possibleRolls
+												List<PossibleRoll> possibleRolls
 											)
 	{
 		double expected = 0;

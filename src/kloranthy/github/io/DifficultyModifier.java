@@ -1,10 +1,11 @@
-package modifier;
+package kloranthy.github.io;
 
 import java.util.UUID;
 
 /**
  */
-public class DifficultyModifier extends Modifier
+public class DifficultyModifier
+	extends Modifier
 {
 	private double additiveModifierForFixedDifficulty;
 	private double multiplicativeModifierForFixedDifficulty;
@@ -14,7 +15,8 @@ public class DifficultyModifier extends Modifier
 	private double multiplicativeModifierForTotalDifficulty;
 
 	public DifficultyModifier()
-	{}
+	{
+	}
 
 	@Override
 	public DifficultyModifier setModifierId( UUID modifierId )

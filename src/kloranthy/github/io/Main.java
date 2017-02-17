@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 import java.util.Scanner;
 
 /**
@@ -31,14 +33,26 @@ public class Main
 				.setDamageType( DamageType.KINETIC )
 				.setBaseHitScore( 6 )
 				.setBaseDamage( 6 );
-		attacker.setWeaponTypeTrainingLevel( WeaponType.MELEE, TrainingLevel.BASIC )
-				  .setWeaponTypeExperienceLevel( WeaponType.MELEE, ExperienceLevel.INEXPERIENCED )
-				  .setDamageTypeTrainingLevel( DamageType.KINETIC, TrainingLevel.BASIC )
-				  .setDamageTypeExperienceLevel( DamageType.KINETIC, ExperienceLevel.NOVICE )
+		attacker.setWeaponTypeTrainingLevel(
+			WeaponType.MELEE,
+			TrainingLevel.BASIC
+													  )
+				  .setWeaponTypeExperienceLevel(
+					  WeaponType.MELEE,
+					  ExperienceLevel.INEXPERIENCED
+														 )
+				  .setDamageTypeTrainingLevel(
+					  DamageType.KINETIC,
+					  TrainingLevel.BASIC
+													  )
+				  .setDamageTypeExperienceLevel(
+					  DamageType.KINETIC,
+					  ExperienceLevel.NOVICE
+														 )
 				  .setAimBonusPerStack( 2 )
 				  .setMaxAimStacks( 3 )
 				  .setWeapon( weapon )
-				  .setTarget(defender);
+				  .setTarget( defender );
 		defender.setEvasionTrainingLevel( TrainingLevel.INTERMEDIATE )
 				  .setEvasionExperienceLevel( ExperienceLevel.NOVICE )
 				  .setBaseDifficulty( 6 )

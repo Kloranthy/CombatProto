@@ -1,6 +1,6 @@
-import java.util.UUID;
+package kloranthy.github.io;
 
-import modifier.DifficultyModifier;
+import java.util.UUID;
 
 /**
  */
@@ -22,8 +22,8 @@ public enum Stance
 
 	public DifficultyModifier getDifficultyModifier()
 	{
-		// note: always returns a new difficulty modifier
-		// which means the modifier returned won't be
+		// note: always returns a new difficulty kloranthy.github.io.modifier
+		// which means the kloranthy.github.io.modifier returned won't be
 		// found in the defender's modifiers
 		DifficultyModifier difficultyModifier = new DifficultyModifier();
 		switch ( this )

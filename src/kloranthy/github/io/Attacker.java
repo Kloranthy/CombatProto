@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,8 +62,8 @@ public class Attacker
 	}
 
 	public Attacker setWeaponTypeTrainingLevel(
-		WeaponType weaponType,
-		TrainingLevel trainingLevel
+																WeaponType weaponType,
+																TrainingLevel trainingLevel
 															)
 	{
 		trainingLevelByWeaponType.put(
@@ -72,8 +74,8 @@ public class Attacker
 	}
 
 	public Attacker setWeaponTypeExperienceLevel(
-		WeaponType weaponType,
-		ExperienceLevel experienceLevel
+																  WeaponType weaponType,
+																  ExperienceLevel experienceLevel
 															  )
 	{
 		experienceLevelByWeaponType.put(
@@ -84,8 +86,8 @@ public class Attacker
 	}
 
 	public Attacker setDamageTypeTrainingLevel(
-		DamageType damageType,
-		TrainingLevel trainingLevel
+																DamageType damageType,
+																TrainingLevel trainingLevel
 															)
 	{
 		trainingLevelByDamageType.put(
@@ -96,8 +98,8 @@ public class Attacker
 	}
 
 	public Attacker setDamageTypeExperienceLevel(
-		DamageType damageType,
-		ExperienceLevel experienceLevel
+																  DamageType damageType,
+																  ExperienceLevel experienceLevel
 															  )
 	{
 		experienceLevelByDamageType.put(
@@ -182,14 +184,43 @@ public class Attacker
 		TrainingLevel trainingLevelForDamageType = trainingLevelByDamageType.get( damageType );
 		ExperienceLevel experienceLevelForDamageType = experienceLevelByDamageType.get( damageType );
 		double expectedHitScoreRoll = PossibleRolls.getInstance()
-													  .getExpectedRoll(
-														  trainingLevelForWeaponType,
-														  trainingLevelForDamageType
-																			);
+																 .getExpectedRoll(
+																	 trainingLevelForWeaponType,
+																	 trainingLevelForDamageType
+																					  );
 		// apply bonuses
 		expectedHitScoreRoll += experienceLevelForWeaponType.bonus;
 		expectedHitScoreRoll += experienceLevelForDamageType.bonus;
 		return calculateHitScore( expectedHitScoreRoll );
+	}
+
+	public double calculateHitScore( double hitScoreRoll )
+	{
+		double hitScore = calculateFixedHitScore() + calculateVariableHitScore( hitScoreRoll );
+		//hitScore += weapon.getAdditiveModifierForTotalHitScore();
+		//hitScore *= weapon.getMultiplicativeModifierForTotalHitScore();
+		return hitScore;
+	}
+
+	public double calculateFixedHitScore()
+	{
+		double fixedHitScore = weapon.getBaseHitScore();
+		//fixedHitScore += weapon.getAdditiveModifierForFixedHitScore();
+		//fixedHitScore *= weapon.getMultiplicativeModifierForFixedHitScore();
+		if ( aimStacks > 0 )
+		{
+			double aimBonus = aimStacks * aimBonusPerStack;
+			fixedHitScore += aimBonus;
+		}
+		return fixedHitScore;
+	}
+
+	public double calculateVariableHitScore( double hitScoreRoll )
+	{
+		double variableHitScore = hitScoreRoll;
+		//variableHitScore += weapon.getAdditiveModifierForVariableHitScore();
+		//variableHitScore *= weapon.getMultiplicativeModifierForVariableHitScore();
+		return variableHitScore;
 	}
 
 	public double calculatePartialHitChance( double difficulty )
@@ -206,84 +237,10 @@ public class Attacker
 		// todo deduct weapon bonuses or ask weapon for chance to hit
 		return PossibleRolls.getInstance()
 								  .getProbabilityOfRollGreaterThanOrEqualTo(
-			requiredRoll,
-			trainingLevelForWeaponType,
-			trainingLevelForDamageType
+									  requiredRoll,
+									  trainingLevelForWeaponType,
+									  trainingLevelForDamageType
 																						 );
-	}
-
-	public double calculateFixedHitScore()
-	{
-		double fixedHitScore = weapon.getBaseHitScore();
-		fixedHitScore += weapon.getAdditiveModifierForFixedHitScore();
-		fixedHitScore *= weapon.getMultiplicativeModifierForFixedHitScore();
-		if ( aimStacks > 0 )
-		{
-			double aimBonus = aimStacks * aimBonusPerStack;
-			fixedHitScore += aimBonus;
-		}
-		return fixedHitScore;
-	}
-
-	public double performHitScoreRoll()
-	{
-		WeaponType weaponType = weapon.getWeaponType();
-		DamageType damageType = weapon.getDamageType();
-		TrainingLevel trainingLevelForWeaponType = trainingLevelByWeaponType.get( weaponType );
-		TrainingLevel trainingLevelForDamageType = trainingLevelByDamageType.get( damageType );
-		ExperienceLevel experienceLevelForWeaponType = experienceLevelByWeaponType.get( weaponType );
-		ExperienceLevel experienceLevelForDamageType = experienceLevelByDamageType.get( damageType );
-		List<Dice> diceUsed = new LinkedList<Dice>();
-		diceUsed.addAll( trainingLevelForWeaponType.getDiceUsed() );
-		diceUsed.addAll( trainingLevelForDamageType.getDiceUsed() );
-		double roll = 0;
-		for ( Dice dice : diceUsed )
-		{
-			roll += dice.roll();
-		}
-		roll += experienceLevelForWeaponType.bonus;
-		roll += experienceLevelForDamageType.bonus;
-		return roll;
-	}
-
-	public double calculateVariableHitScore( double hitScoreRoll )
-	{
-		double variableHitScore = hitScoreRoll;
-		variableHitScore += weapon.getAdditiveModifierForVariableHitScore();
-		variableHitScore *= weapon.getMultiplicativeModifierForVariableHitScore();
-		return variableHitScore;
-	}
-
-	public double calculateHitScore( double hitScoreRoll )
-	{
-		double hitScore = calculateFixedHitScore() + calculateVariableHitScore( hitScoreRoll );
-		hitScore += weapon.getAdditiveModifierForTotalHitScore();
-		hitScore *= weapon.getMultiplicativeModifierForTotalHitScore();
-		return hitScore;
-	}
-
-	public double calculateFixedDamage()
-	{
-		double fixedDamage = weapon.getBaseDamage();
-		fixedDamage += weapon.getAdditiveModifierForFixedDamage();
-		fixedDamage *= weapon.getMultiplicativeModifierForFixedDamage();
-		return fixedDamage;
-	}
-
-	public double calculateVariableDamage( double roll )
-	{
-		double variableDamage = roll;
-		variableDamage += weapon.getAdditiveModifierForVariableDamage();
-		variableDamage *= weapon.getMultiplicativeModifierForVariableDamage();
-		return variableDamage;
-	}
-
-	public double calculateDamage( double roll )
-	{
-		double damage = calculateFixedDamage() + calculateVariableDamage( roll );
-		damage += weapon.getAdditiveModifierForTotalDamage();
-		damage *= weapon.getMultiplicativeModifierForTotalDamage();
-		return damage;
 	}
 
 	public double calculateExpectedDamageDealt()
@@ -302,6 +259,30 @@ public class Attacker
 		expectedRoll += experienceLevelForWeaponType.bonus;
 		expectedRoll += experienceLevelForDamageType.bonus;
 		return calculateDamage( expectedRoll );
+	}
+
+	public double calculateDamage( double roll )
+	{
+		double damage = calculateFixedDamage() + calculateVariableDamage( roll );
+		//damage += weapon.getAdditiveModifierForTotalDamage();
+		//damage *= weapon.getMultiplicativeModifierForTotalDamage();
+		return damage;
+	}
+
+	public double calculateFixedDamage()
+	{
+		double fixedDamage = weapon.getBaseDamage();
+		//fixedDamage += weapon.getAdditiveModifierForFixedDamage();
+		//fixedDamage *= weapon.getMultiplicativeModifierForFixedDamage();
+		return fixedDamage;
+	}
+
+	public double calculateVariableDamage( double roll )
+	{
+		double variableDamage = roll;
+		//variableDamage += weapon.getAdditiveModifierForVariableDamage();
+		//variableDamage *= weapon.getMultiplicativeModifierForVariableDamage();
+		return variableDamage;
 	}
 
 	public void attack()
@@ -340,5 +321,26 @@ public class Attacker
 			// aim stacks are consumed
 			aimStacks = 0;
 		}
+	}
+
+	public double performHitScoreRoll()
+	{
+		WeaponType weaponType = weapon.getWeaponType();
+		DamageType damageType = weapon.getDamageType();
+		TrainingLevel trainingLevelForWeaponType = trainingLevelByWeaponType.get( weaponType );
+		TrainingLevel trainingLevelForDamageType = trainingLevelByDamageType.get( damageType );
+		ExperienceLevel experienceLevelForWeaponType = experienceLevelByWeaponType.get( weaponType );
+		ExperienceLevel experienceLevelForDamageType = experienceLevelByDamageType.get( damageType );
+		List<Dice> diceUsed = new LinkedList<Dice>();
+		diceUsed.addAll( trainingLevelForWeaponType.getDiceUsed() );
+		diceUsed.addAll( trainingLevelForDamageType.getDiceUsed() );
+		double roll = 0;
+		for ( Dice dice : diceUsed )
+		{
+			roll += dice.roll();
+		}
+		roll += experienceLevelForWeaponType.bonus;
+		roll += experienceLevelForDamageType.bonus;
+		return roll;
 	}
 }

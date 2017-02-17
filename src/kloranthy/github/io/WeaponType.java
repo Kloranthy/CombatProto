@@ -1,3 +1,5 @@
+package kloranthy.github.io;
+
 /**
  */
 public enum WeaponType
@@ -7,6 +9,5 @@ public enum WeaponType
 	SMG,
 	RIFLE,
 	SHOTGUN,
-	LAUNCHER
-	;
+	LAUNCHER;
 }

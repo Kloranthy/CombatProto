@@ -1,11 +1,13 @@
+package kloranthy.github.io;
+
 import java.util.Random;
 
 /**
  */
 public class Dice
 {
-	private Random random;
 	public final int sides;
+	private Random random;
 
 	public Dice( int sides )
 	{

@@ -1,4 +1,4 @@
-package modifier;
+package kloranthy.github.io;
 
 import java.util.UUID;
 
@@ -10,7 +10,8 @@ public abstract class Modifier
 	private String modifierName;
 
 	public Modifier()
-	{}
+	{
+	}
 
 	public UUID getModifierId()
 	{

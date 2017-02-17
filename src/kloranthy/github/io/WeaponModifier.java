@@ -1,8 +1,9 @@
-package modifier;
+package kloranthy.github.io;
 
 /**
  */
-public class WeaponModifier extends Modifier
+public class WeaponModifier
+	extends Modifier
 {
 	private double additiveModifierForFixedHitScore;
 	private double multiplicativeModifierForFixedHitScore;
@@ -16,9 +17,44 @@ public class WeaponModifier extends Modifier
 	private double multiplicativeModifierForVariableDamage;
 	private double additiveModifierForTotalDamage;
 	private double multiplicativeModifierForTotalDamage;
-	
+
 	public WeaponModifier()
-	{}
+	{
+	}
+
+	public void applyEffectsTo( Weapon weapon )
+	{
+		ScalingStat hitScoreState = weapon.getHitScore();
+		hitScoreState.setAdditiveModifierForFixedValue(
+			getAdditiveModifierForFixedHitScore() + additiveModifierForFixedHitScore )
+						 .setMultiplicativeModifierForFixedValue(
+							 getMultiplicativeModifierForFixedHitScore() +
+							 multiplicativeModifierForFixedHitScore )
+						 .setAdditiveModifierForVariableValue( getAdditiveModifierForVariableHitScore() +
+																			additiveModifierForVariableHitScore )
+						 .setMultiplicativeModifierForVariableValue(
+							 getMultiplicativeModifierForVariableHitScore() +
+							 multiplicativeModifierForVariableHitScore )
+						 .setAdditiveModifierForTotalValue(
+							 getAdditiveModifierForTotalHitScore() + additiveModifierForTotalHitScore )
+						 .setMultiplicativeModifierForTotalValue(
+							 getMultiplicativeModifierForTotalHitScore() +
+							 multiplicativeModifierForTotalHitScore );
+		ScalingStat damageStat = weapon.getDamage();
+		damageStat.setAdditiveModifierForFixedValue(
+			getAdditiveModifierForFixedDamage() + additiveModifierForFixedDamage )
+					 .setMultiplicativeModifierForFixedValue( getMultiplicativeModifierForFixedDamage() +
+																			multiplicativeModifierForFixedDamage )
+					 .setAdditiveModifierForVariableValue(
+						 getAdditiveModifierForVariableDamage() + additiveModifierForVariableDamage )
+					 .setMultiplicativeModifierForVariableValue(
+						 getMultiplicativeModifierForVariableDamage() +
+						 multiplicativeModifierForVariableDamage )
+					 .setAdditiveModifierForTotalValue(
+						 getAdditiveModifierForTotalDamage() + additiveModifierForTotalDamage )
+					 .setMultiplicativeModifierForTotalValue( getMultiplicativeModifierForTotalDamage() +
+																			multiplicativeModifierForTotalDamage );
+	}
 
 	public double getAdditiveModifierForFixedHitScore()
 	{
@@ -150,5 +186,39 @@ public class WeaponModifier extends Modifier
 	{
 		this.multiplicativeModifierForTotalDamage = multiplicativeModifierForTotalDamage;
 		return this;
+	}
+
+	public void removeEffectsFrom( Weapon weapon )
+	{
+		ScalingStat hitScoreState = weapon.getHitScore();
+		hitScoreState.setAdditiveModifierForFixedValue(
+			getAdditiveModifierForFixedHitScore() - additiveModifierForFixedHitScore )
+						 .setMultiplicativeModifierForFixedValue(
+							 getMultiplicativeModifierForFixedHitScore() -
+							 multiplicativeModifierForFixedHitScore )
+						 .setAdditiveModifierForVariableValue( getAdditiveModifierForVariableHitScore() -
+																			additiveModifierForVariableHitScore )
+						 .setMultiplicativeModifierForVariableValue(
+							 getMultiplicativeModifierForVariableHitScore() -
+							 multiplicativeModifierForVariableHitScore )
+						 .setAdditiveModifierForTotalValue(
+							 getAdditiveModifierForTotalHitScore() - additiveModifierForTotalHitScore )
+						 .setMultiplicativeModifierForTotalValue(
+							 getMultiplicativeModifierForTotalHitScore() -
+							 multiplicativeModifierForTotalHitScore );
+		ScalingStat damageStat = weapon.getDamage();
+		damageStat.setAdditiveModifierForFixedValue(
+			getAdditiveModifierForFixedDamage() - additiveModifierForFixedDamage )
+					 .setMultiplicativeModifierForFixedValue( getMultiplicativeModifierForFixedDamage() -
+																			multiplicativeModifierForFixedDamage )
+					 .setAdditiveModifierForVariableValue(
+						 getAdditiveModifierForVariableDamage() - additiveModifierForVariableDamage )
+					 .setMultiplicativeModifierForVariableValue(
+						 getMultiplicativeModifierForVariableDamage() -
+						 multiplicativeModifierForVariableDamage )
+					 .setAdditiveModifierForTotalValue(
+						 getAdditiveModifierForTotalDamage() - additiveModifierForTotalDamage )
+					 .setMultiplicativeModifierForTotalValue( getMultiplicativeModifierForTotalDamage() -
+																			multiplicativeModifierForTotalDamage );
 	}
 }
