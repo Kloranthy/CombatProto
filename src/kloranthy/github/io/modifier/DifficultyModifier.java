@@ -1,4 +1,4 @@
-package kloranthy.github.io;
+package kloranthy.github.io.modifier;
 
 import java.util.UUID;
 

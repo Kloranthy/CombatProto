@@ -6,8 +6,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import kloranthy.github.io.proficiency.TrainingLevel;
+
 /**
- * todo add a way of calculating possible rolls for 2 training levels that isn't an abomination
+ * todo convert rolls from double to int, with the exception of expected value
+ * make probability of double value that convert double to 2 ints
+ * one being rounded down, the other rounded up
+ * find the probability of getting rolls higher than each
+ * and combine them weighting each based on rounding
  */
 public class PossibleRolls
 {
@@ -131,7 +137,7 @@ public class PossibleRolls
 		return getExpectedRoll( possibleRolls );
 	}
 
-	public double getLowestRoll( List<PossibleRoll> possibleRolls )
+	public int getLowestRoll( List<PossibleRoll> possibleRolls )
 	{
 		sortByValue( possibleRolls );
 		return possibleRolls.get( 0 )
@@ -140,10 +146,28 @@ public class PossibleRolls
 
 	private void sortByValue( List<PossibleRoll> possibleRolls )
 	{
-		possibleRolls.sort( (Comparator.comparingDouble( PossibleRoll::getValue )) );
+		possibleRolls.sort( (Comparator.comparingInt( PossibleRoll::getValue )) );
 	}
 
-	public double getHighestRoll( List<PossibleRoll> possibleRolls )
+	public int getHighestRoll( TrainingLevel trainingLevel )
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
+		return getHighestRoll( possibleRolls );
+	}
+
+	public int getHighestRoll(
+		TrainingLevel trainingLevel1,
+		TrainingLevel trainingLevel2
+									 )
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getHighestRoll( possibleRolls );
+	}
+
+	public int getHighestRoll( List<PossibleRoll> possibleRolls )
 	{
 		sortByValue( possibleRolls );
 		return possibleRolls.get( possibleRolls.size() - 1 )
@@ -340,6 +364,49 @@ public class PossibleRolls
 																  );
 	}
 
+	public double getProbabilityOfRoll(
+		int roll,
+		TrainingLevel trainingLevel
+		)
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor( trainingLevel );
+		return getProbabilityOfRoll(
+			roll,
+			possibleRolls
+											);
+	}
+
+	public double getProbabilityOfRoll(
+													 int roll,
+													 TrainingLevel trainingLevel1,
+													 TrainingLevel trainingLevel2
+												 )
+	{
+		List<PossibleRoll> possibleRolls = getPossibleRollsFor(
+			trainingLevel1,
+			trainingLevel2
+																				);
+		return getProbabilityOfRoll(
+			roll,
+			possibleRolls
+											);
+	}
+
+	public double getProbabilityOfRoll(
+													 int roll,
+													 List<PossibleRoll> possibleRolls
+												 )
+	{
+		for ( PossibleRoll possibleRoll : possibleRolls )
+		{
+			if ( possibleRoll.getValue() == roll )
+			{
+				return possibleRoll.getProbability();
+			}
+		}
+		return 0;
+	}
+
 	private void calculatePossibleRolls()
 	{
 		System.out.println( "calculating possible rolls for single training level" );
@@ -513,7 +580,7 @@ public class PossibleRolls
 	}
 
 	private void addPossibleRoll(
-											 double value,
+											 int value,
 											 List<PossibleRoll> possibleRolls
 										 )
 	{
@@ -543,7 +610,7 @@ public class PossibleRolls
 	}
 
 	private boolean hasPossibleRollWithValue(
-															 double value,
+															 int value,
 															 List<PossibleRoll> possibleRolls
 														 )
 	{
@@ -563,7 +630,7 @@ public class PossibleRolls
 	}
 
 	private PossibleRoll getPossibleRollWithValue(
-																	double value,
+																	int value,
 																	List<PossibleRoll> possibleRolls
 																)
 	{
@@ -611,7 +678,7 @@ public class PossibleRolls
 		double expected = 0;
 		for ( PossibleRoll possibleRoll : possibleRolls )
 		{
-			expected += possibleRoll.getValue() * possibleRoll.getProbability();
+			expected += (double)possibleRoll.getValue() * possibleRoll.getProbability();
 		}
 		expected = Utilities.round(
 			expected,

@@ -1,7 +1,9 @@
-package kloranthy.github.io;
+package kloranthy.github.io.proficiency;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import kloranthy.github.io.Dice;
 
 /**
  */

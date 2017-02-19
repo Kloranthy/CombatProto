@@ -2,7 +2,7 @@ package kloranthy.github.io;
 
 /**
  */
-public enum HitTypes
+public enum HitType
 {
 	CRITICAL_HIT(
 						1.5,
@@ -20,10 +20,10 @@ public enum HitTypes
 	public final double requiredRatio;
 	public final double damageMultiplier;
 
-	HitTypes(
+	HitType(
 				  double requiredRatio,
 				  double damageMultiplier
-			  )
+			 )
 	{
 		this.requiredRatio = requiredRatio;
 		this.damageMultiplier = damageMultiplier;

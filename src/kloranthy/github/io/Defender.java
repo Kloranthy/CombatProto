@@ -5,6 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import kloranthy.github.io.modifier.DifficultyModifier;
+import kloranthy.github.io.modifier.Modifier;
+import kloranthy.github.io.proficiency.ExperienceLevel;
+import kloranthy.github.io.proficiency.TrainingLevel;
+import kloranthy.github.io.stat.Stat;
+
 /**
  */
 public class Defender

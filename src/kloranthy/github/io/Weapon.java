@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import kloranthy.github.io.modifier.WeaponModifier;
+import kloranthy.github.io.stat.ScalingStat;
+
 /**
  */
 public class Weapon
@@ -44,20 +47,10 @@ public class Weapon
 		return this;
 	}
 
-	public double getBaseHitScore()
-	{
-		return hitScore.getBaseValue();
-	}
-
 	public Weapon setBaseHitScore( double baseHitScore )
 	{
 		hitScore.setBaseValue( baseHitScore );
 		return this;
-	}
-
-	public double getBaseDamage()
-	{
-		return damage.getBaseValue();
 	}
 
 	public Weapon setBaseDamage( double baseDamage )

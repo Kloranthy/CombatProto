@@ -1,4 +1,4 @@
-package kloranthy.github.io;
+package kloranthy.github.io.proficiency;
 
 /**
  */

@@ -2,6 +2,9 @@ package kloranthy.github.io;
 
 import java.util.Scanner;
 
+import kloranthy.github.io.proficiency.ExperienceLevel;
+import kloranthy.github.io.proficiency.TrainingLevel;
+
 /**
  */
 public class Main

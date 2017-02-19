@@ -1,4 +1,4 @@
-package kloranthy.github.io;
+package kloranthy.github.io.stat;
 
 import java.util.UUID;
 
@@ -94,13 +94,5 @@ public class Stat
 	{
 		this.multiplicativeModifier = multiplicativeModifier;
 		return this;
-	}
-
-	public double getValue()
-	{
-		double value = baseValue;
-		baseValue += additiveModifier;
-		baseValue *= multiplicativeModifier;
-		return baseValue;
 	}
 }

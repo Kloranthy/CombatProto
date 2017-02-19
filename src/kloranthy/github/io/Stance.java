@@ -2,6 +2,8 @@ package kloranthy.github.io;
 
 import java.util.UUID;
 
+import kloranthy.github.io.modifier.DifficultyModifier;
+
 /**
  */
 public enum Stance

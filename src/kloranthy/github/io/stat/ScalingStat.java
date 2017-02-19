@@ -1,4 +1,4 @@
-package kloranthy.github.io;
+package kloranthy.github.io.stat;
 
 import java.util.UUID;
 
@@ -7,7 +7,6 @@ import java.util.UUID;
  */
 public class ScalingStat
 {
-	private UUID statId;
 	private String statName;
 	private String statDescription;
 	private double baseValue;
@@ -31,17 +30,6 @@ public class ScalingStat
 		multiplicativeModifierForVariableValue = 1;
 		additiveModifierForTotalValue = 0;
 		multiplicativeModifierForTotalValue = 1;
-	}
-
-	public UUID getStatId()
-	{
-		return statId;
-	}
-
-	public ScalingStat setStatId( UUID statId )
-	{
-		this.statId = statId;
-		return this;
 	}
 
 	public String getStatName()
@@ -141,29 +129,5 @@ public class ScalingStat
 	{
 		this.multiplicativeModifierForTotalValue = multiplicativeModifierForTotalValue;
 		return this;
-	}
-
-	public double getValueFor( double variable )
-	{
-		double value = getFixedValue() + getVariableValue( variable );
-		value += additiveModifierForTotalValue;
-		value *= multiplicativeModifierForTotalValue;
-		return value;
-	}
-
-	public double getFixedValue()
-	{
-		double fixedValue = baseValue;
-		fixedValue += additiveModifierForFixedValue;
-		fixedValue *= multiplicativeModifierForFixedValue;
-		return fixedValue;
-	}
-
-	public double getVariableValue( double variable )
-	{
-		double variableValue = variable;
-		variableValue += additiveModifierForVariableValue;
-		variableValue *= multiplicativeModifierForVariableValue;
-		return variableValue;
 	}
 }

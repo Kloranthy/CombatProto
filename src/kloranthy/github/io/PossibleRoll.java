@@ -4,7 +4,7 @@ package kloranthy.github.io;
  */
 public class PossibleRoll
 {
-	private double value;
+	private int value;
 	private int count;
 	private double probability;
 
@@ -15,12 +15,12 @@ public class PossibleRoll
 		probability = 0;
 	}
 
-	public double getValue()
+	public int getValue()
 	{
 		return value;
 	}
 
-	public PossibleRoll setValue( double value )
+	public PossibleRoll setValue( int value )
 	{
 		this.value = value;
 		return this;
