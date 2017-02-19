@@ -2,12 +2,16 @@ package kloranthy.github.io;
 
 import java.util.Scanner;
 
+import kloranthy.github.io.damage.DamageType;
 import kloranthy.github.io.proficiency.ExperienceLevel;
 import kloranthy.github.io.proficiency.TrainingLevel;
+import kloranthy.github.io.equipment.weapon.Weapon;
+import kloranthy.github.io.equipment.weapon.WeaponType;
 
 /**
  */
-public class Main
+public
+class Main
 {
 	private Scanner scanner;
 	private boolean running;
@@ -15,56 +19,63 @@ public class Main
 	private Attacker attacker;
 	private Defender defender;
 
-	public Main()
+	public
+	Main()
 	{
 		scanner = new Scanner( System.in );
 	}
 
-	public static void main( String[] args )
+	public static
+	void main( String[] args )
 	{
 		Main main = new Main();
 		main.init();
 		main.start();
 	}
 
-	private void init()
+	private
+	void init()
 	{
 		attacker = new Attacker();
 		defender = new Defender();
 		Weapon weapon = new Weapon();
-		weapon.setWeaponType( WeaponType.MELEE )
-				.setDamageType( DamageType.KINETIC )
-				.setBaseHitScore( 6 )
-				.setBaseDamage( 6 );
-		attacker.setWeaponTypeTrainingLevel(
-			WeaponType.MELEE,
-			TrainingLevel.BASIC
-													  )
-				  .setWeaponTypeExperienceLevel(
-					  WeaponType.MELEE,
-					  ExperienceLevel.INEXPERIENCED
-														 )
-				  .setDamageTypeTrainingLevel(
-					  DamageType.KINETIC,
-					  TrainingLevel.BASIC
-													  )
-				  .setDamageTypeExperienceLevel(
-					  DamageType.KINETIC,
-					  ExperienceLevel.NOVICE
-														 )
-				  .setAimBonusPerStack( 2 )
-				  .setMaxAimStacks( 3 )
-				  .setWeapon( weapon )
-				  .setTarget( defender );
-		defender.setEvasionTrainingLevel( TrainingLevel.INTERMEDIATE )
-				  .setEvasionExperienceLevel( ExperienceLevel.NOVICE )
-				  .setBaseDifficulty( 6 )
-				  .setBaseDamageNegation( 2 )
-				  .setBaseDamageResistance( 0.3 )
-				  .setDefenderStance( Stance.STANDING );
+		weapon
+			.setWeaponType( WeaponType.MELEE )
+			.setDamageType( DamageType.KINETIC )
+			.setBaseHitScore( 6 )
+			.setBaseDamage( 6 );
+		attacker
+			.setWeaponTypeTrainingLevel(
+				WeaponType.MELEE,
+				TrainingLevel.BASIC
+												)
+			.setWeaponTypeExperienceLevel(
+				WeaponType.MELEE,
+				ExperienceLevel.INEXPERIENCED
+												  )
+			.setDamageTypeTrainingLevel(
+				DamageType.KINETIC,
+				TrainingLevel.BASIC
+												)
+			.setDamageTypeExperienceLevel(
+				DamageType.KINETIC,
+				ExperienceLevel.NOVICE
+												  )
+			.setAimBonusPerStack( 2 )
+			.setMaxAimStacks( 3 )
+			.setWeapon( weapon )
+			.setTarget( defender );
+		defender
+			.setEvasionTrainingLevel( TrainingLevel.INTERMEDIATE )
+			.setEvasionExperienceLevel( ExperienceLevel.NOVICE )
+			.setBaseDifficulty( 6 )
+			.setBaseDamageNegation( 2 )
+			.setBaseDamageResistance( 0.3 )
+			.setDefenderStance( Stance.STANDING );
 	}
 
-	public void start()
+	public
+	void start()
 	{
 		running = true;
 		while ( running )
@@ -78,12 +89,14 @@ public class Main
 		}
 	}
 
-	private void print( String output )
+	private
+	void print( String output )
 	{
 		System.out.println( output );
 	}
 
-	private void handleInput( String input )
+	private
+	void handleInput( String input )
 	{
 		input = input.toLowerCase();
 		switch ( input )
@@ -103,17 +116,20 @@ public class Main
 	}
 
 
-	private void aim()
+	private
+	void aim()
 	{
 		attacker.aim();
 	}
 
-	private void shoot()
+	private
+	void shoot()
 	{
 		attacker.attack();
 	}
 
-	private void exit()
+	private
+	void exit()
 	{
 		running = false;
 	}

@@ -4,10 +4,13 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import kloranthy.github.io.damage.DamageType;
 import kloranthy.github.io.proficiency.ExperienceLevel;
 import kloranthy.github.io.proficiency.Proficiency;
 import kloranthy.github.io.proficiency.TrainingLevel;
 import kloranthy.github.io.stat.ScalingStat;
+import kloranthy.github.io.equipment.weapon.Weapon;
+import kloranthy.github.io.equipment.weapon.WeaponType;
 
 /**
  * todo add range into hit calculations
@@ -15,6 +18,10 @@ import kloranthy.github.io.stat.ScalingStat;
  * todo refactor to allow for unarmed, check that weapon != null
  * to decide: how to add modifiers for attacker
  * to decide: when is the aim bonus applied
+ * to decide: since aim bonus is exclusive to ranged weapons,
+ * should it be in the ranged weapon class?
+ *
+ * really tempted to rename hit score to accuracy or accuracy rating
  */
 public
 class Attacker
@@ -56,8 +63,8 @@ class Attacker
 
 	public
 	Attacker setWeaponTypeTrainingLevel(
-													  WeaponType weaponType,
-													  TrainingLevel trainingLevel
+		WeaponType weaponType,
+		TrainingLevel trainingLevel
 												  )
 	{
 		Proficiency proficiency = weaponTypeProficiencies.get( weaponType );
@@ -67,8 +74,8 @@ class Attacker
 
 	public
 	Attacker setWeaponTypeExperienceLevel(
-														 WeaponType weaponType,
-														 ExperienceLevel experienceLevel
+		WeaponType weaponType,
+		ExperienceLevel experienceLevel
 													 )
 	{
 		Proficiency proficiency = weaponTypeProficiencies.get( weaponType );
@@ -78,8 +85,8 @@ class Attacker
 
 	public
 	Attacker setDamageTypeTrainingLevel(
-													  DamageType damageType,
-													  TrainingLevel trainingLevel
+		DamageType damageType,
+		TrainingLevel trainingLevel
 												  )
 	{
 		Proficiency proficiency = damageTypeProficiencies.get( damageType );
@@ -89,8 +96,8 @@ class Attacker
 
 	public
 	Attacker setDamageTypeExperienceLevel(
-														 DamageType damageType,
-														 ExperienceLevel experienceLevel
+		DamageType damageType,
+		ExperienceLevel experienceLevel
 													 )
 	{
 		Proficiency proficiency = damageTypeProficiencies.get( damageType );
@@ -190,11 +197,12 @@ class Attacker
 		TrainingLevel trainingLevelForDamageType = damageTypeProficiency.getTrainingLevel();
 		ExperienceLevel experienceLevelForDamageType = damageTypeProficiency.getExperienceLevel();
 		// get the expected roll for the training levels
-		double expectedHitScoreRoll = PossibleRolls.getInstance()
-																 .getExpectedRoll(
-																	 trainingLevelForWeaponType,
-																	 trainingLevelForDamageType
-																					  );
+		double expectedHitScoreRoll = PossibleRolls
+			.getInstance()
+			.getExpectedRoll(
+				trainingLevelForWeaponType,
+				trainingLevelForDamageType
+								 );
 		// apply experience bonuses
 		expectedHitScoreRoll += experienceLevelForWeaponType.bonus;
 		expectedHitScoreRoll += experienceLevelForDamageType.bonus;
@@ -216,12 +224,6 @@ class Attacker
 		// apply the mods to the hit score
 		hitScore += addModForTotalHitScore;
 		hitScore *= multiModForTotalHitScore;
-		// if aiming apply the aim bonus
-		if ( aimStacks > 0 )
-		{
-			double aimBonus = aimStacks * aimBonusPerStack;
-			hitScore += aimBonus;
-		}
 		return hitScore;
 	}
 
@@ -267,9 +269,39 @@ class Attacker
 	}
 
 	public
+	double calculatePartialHitChance( double difficulty )
+	{
+		double requiredRoll = calculateRollRequiredForHit(
+			HitType.PARTIAL_HIT,
+			difficulty
+																		 );
+		// get the weapon and damage types of the weapon
+		WeaponType weaponType = weapon.getWeaponType();
+		DamageType damageType = weapon.getDamageType();
+		// get the attacker's proficiencies with those weapon and damage types
+		Proficiency weaponTypeProficiency = weaponTypeProficiencies.get( weaponType );
+		Proficiency damageTypeProficiency = damageTypeProficiencies.get( damageType );
+		// get the training and experience levels from the proficiencies
+		TrainingLevel trainingLevelForWeaponType = weaponTypeProficiency.getTrainingLevel();
+		ExperienceLevel experienceLevelForWeaponType = weaponTypeProficiency.getExperienceLevel();
+		TrainingLevel trainingLevelForDamageType = damageTypeProficiency.getTrainingLevel();
+		ExperienceLevel experienceLevelForDamageType = damageTypeProficiency.getExperienceLevel();
+		// deduct the experience bonuses
+		requiredRoll -= experienceLevelForWeaponType.bonus;
+		requiredRoll -= experienceLevelForDamageType.bonus;
+		return PossibleRolls
+			.getInstance()
+			.getProbabilityOfRollGreaterThanOrEqualTo(
+				requiredRoll,
+				trainingLevelForWeaponType,
+				trainingLevelForDamageType
+																  );
+	}
+
+	public
 	int calculateRollRequiredForHit(
-												 HitType hitType,
-												 double difficulty
+		HitType hitType,
+		double difficulty
 											 )
 	{
 		double rollRequired = difficulty;
@@ -296,35 +328,6 @@ class Attacker
 			rollRequired,
 			0
 											 );
-	}
-
-	public
-	double calculatePartialHitChance( double difficulty )
-	{
-		double requiredRoll = calculateRollRequiredForHit(
-			HitType.PARTIAL_HIT,
-			difficulty
-																		 );
-		// get the weapon and damage types of the weapon
-		WeaponType weaponType = weapon.getWeaponType();
-		DamageType damageType = weapon.getDamageType();
-		// get the attacker's proficiencies with those weapon and damage types
-		Proficiency weaponTypeProficiency = weaponTypeProficiencies.get( weaponType );
-		Proficiency damageTypeProficiency = damageTypeProficiencies.get( damageType );
-		// get the training and experience levels from the proficiencies
-		TrainingLevel trainingLevelForWeaponType = weaponTypeProficiency.getTrainingLevel();
-		ExperienceLevel experienceLevelForWeaponType = weaponTypeProficiency.getExperienceLevel();
-		TrainingLevel trainingLevelForDamageType = damageTypeProficiency.getTrainingLevel();
-		ExperienceLevel experienceLevelForDamageType = damageTypeProficiency.getExperienceLevel();
-		// deduct the experience bonuses
-		requiredRoll -= experienceLevelForWeaponType.bonus;
-		requiredRoll -= experienceLevelForDamageType.bonus;
-		return PossibleRolls.getInstance()
-								  .getProbabilityOfRollGreaterThanOrEqualTo(
-									  requiredRoll,
-									  trainingLevelForWeaponType,
-									  trainingLevelForDamageType
-																						 );
 	}
 
 	public

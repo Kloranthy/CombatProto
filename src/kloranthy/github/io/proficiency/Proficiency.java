@@ -2,41 +2,48 @@ package kloranthy.github.io.proficiency;
 
 /**
  */
-public class Proficiency
+public
+class Proficiency
 {
 	private TrainingLevel trainingLevel;
 	private ExperienceLevel experienceLevel;
 	// todo add progress to next exp level
 
-	public Proficiency()
+	public
+	Proficiency()
 	{
 		trainingLevel = TrainingLevel.NONE;
 		experienceLevel = ExperienceLevel.INEXPERIENCED;
 	}
 
-	public TrainingLevel getTrainingLevel()
+	public
+	TrainingLevel getTrainingLevel()
 	{
 		return trainingLevel;
 	}
 
-	public Proficiency setTrainingLevel( TrainingLevel trainingLevel )
+	public
+	Proficiency setTrainingLevel( TrainingLevel trainingLevel )
 	{
 		this.trainingLevel = trainingLevel;
 		return this;
 	}
 
-	public ExperienceLevel getExperienceLevel()
+	public
+	ExperienceLevel getExperienceLevel()
 	{
 		return experienceLevel;
 	}
 
-	public Proficiency setExperienceLevel( ExperienceLevel experienceLevel )
+	public
+	Proficiency setExperienceLevel( ExperienceLevel experienceLevel )
 	{
 		this.experienceLevel = experienceLevel;
 		return this;
 	}
 
-	public boolean increaseTrainingLevel()
+	public
+	boolean increaseTrainingLevel()
 	{
 		switch ( trainingLevel )
 		{
@@ -56,7 +63,8 @@ public class Proficiency
 		return true;
 	}
 
-	public boolean increaseExperienceLevel()
+	public
+	boolean increaseExperienceLevel()
 	{
 		if ( trainingLevel.maxExperienceLevel == experienceLevel )
 		{
@@ -76,7 +84,7 @@ public class Proficiency
 			case MASTER:
 				return false;
 			default:
-					return false;
+				return false;
 		}
 	}
 }

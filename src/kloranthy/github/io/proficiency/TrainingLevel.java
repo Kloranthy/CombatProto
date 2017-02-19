@@ -7,27 +7,28 @@ import kloranthy.github.io.Dice;
 
 /**
  */
-public enum TrainingLevel
+public
+enum TrainingLevel
 {
 	NONE(
-			 0,
-			 "none",
-			 ExperienceLevel.NOVICE
+		0,
+		"none",
+		ExperienceLevel.NOVICE
 	),
 	BASIC(
-			  1,
-			  "basic",
-			  ExperienceLevel.VETERAN
+		1,
+		"basic",
+		ExperienceLevel.VETERAN
 	),
 	INTERMEDIATE(
-						2,
-						"intermediate",
-						ExperienceLevel.VETERAN
+		2,
+		"intermediate",
+		ExperienceLevel.VETERAN
 	),
 	ADVANCED(
-				  3,
-				  "advanced",
-				  ExperienceLevel.MASTER
+		3,
+		"advanced",
+		ExperienceLevel.MASTER
 	);
 
 	public final int level;
@@ -35,9 +36,9 @@ public enum TrainingLevel
 	public final ExperienceLevel maxExperienceLevel;
 
 	TrainingLevel(
-						 int level,
-						 String name,
-						 ExperienceLevel maxExperienceLevel
+		int level,
+		String name,
+		ExperienceLevel maxExperienceLevel
 					 )
 	{
 		this.level = level;
@@ -45,7 +46,8 @@ public enum TrainingLevel
 		this.maxExperienceLevel = maxExperienceLevel;
 	}
 
-	public List<Dice> getDiceUsed()
+	public
+	List<Dice> getDiceUsed()
 	{
 		List<Dice> diceUsed = new LinkedList<Dice>();
 		switch ( this )

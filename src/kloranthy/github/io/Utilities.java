@@ -5,19 +5,24 @@ import java.math.RoundingMode;
 
 /**
  */
-public class Utilities
+public
+class Utilities
 {
-	public static double convertToPercentileFormat( double probability )
+	public static
+	double convertToPercentileFormat( double probability )
 	{
-		probability = round( probability * 100,
-									2 );
+		probability = round(
+			probability * 100,
+			2
+								 );
 		return probability;
 	}
 
-	public static double round(
-										  double value,
-										  int places
-									  )
+	public static
+	double round(
+		double value,
+		int places
+					)
 	{
 		if ( places < 0 )
 		{
